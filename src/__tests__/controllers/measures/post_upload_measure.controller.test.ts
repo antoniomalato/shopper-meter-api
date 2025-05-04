@@ -24,15 +24,12 @@ describe('PostUploadMeasureController', () => {
       json: mockJson,
     };
 
-    // Reset all mocks
     jest.clearAllMocks();
     
-    // Default mock implementation for schema validation
     (uploadMeasureValidationSchema.parse as jest.Mock).mockImplementation((data) => data);
   });
 
   it('should successfully process a valid measure upload', async () => {
-    // Arrange
     const mockRequestData = {
       image: 'data:image/png;base64,abc123',
       customer_code: 'CUST001',
@@ -49,10 +46,8 @@ describe('PostUploadMeasureController', () => {
     mockRequest.body = mockRequestData;
     (createMeasureService as jest.Mock).mockResolvedValue(expectedResult);
 
-    // Act
     await PostUploadMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(uploadMeasureValidationSchema.parse).toHaveBeenCalledWith(mockRequestData);
     expect(createMeasureService).toHaveBeenCalledWith(mockRequestData);
     expect(mockStatus).toHaveBeenCalledWith(200);
@@ -60,7 +55,6 @@ describe('PostUploadMeasureController', () => {
   });
 
   it('should return 409 error when trying to upload duplicate measure', async () => {
-    // Arrange
     const mockError = {
       status: 409,
       error_code: 'DOUBLE_REPORT',
@@ -76,10 +70,8 @@ describe('PostUploadMeasureController', () => {
 
     (createMeasureService as jest.Mock).mockRejectedValue(mockError);
 
-    // Act
     await PostUploadMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(mockStatus).toHaveBeenCalledWith(409);
     expect(mockJson).toHaveBeenCalledWith({
       error_code: 'DOUBLE_REPORT',
@@ -88,7 +80,6 @@ describe('PostUploadMeasureController', () => {
   });
 
   it('should return 400 error when validation fails', async () => {
-    // Arrange
     const mockZodError = {
       name: 'ZodError',
       errors: [
@@ -106,10 +97,8 @@ describe('PostUploadMeasureController', () => {
       throw mockZodError;
     });
 
-    // Act
     await PostUploadMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(mockStatus).toHaveBeenCalledWith(400);
     expect(mockJson).toHaveBeenCalledWith({
       error_code: 'INVALID_DATA',
@@ -118,7 +107,6 @@ describe('PostUploadMeasureController', () => {
   });
 
   it('should return 500 error when an unexpected error occurs', async () => {
-    // Arrange
     mockRequest.body = {
       image: 'data:image/png;base64,abc123',
       customer_code: 'CUST001',
@@ -128,10 +116,8 @@ describe('PostUploadMeasureController', () => {
 
     (createMeasureService as jest.Mock).mockRejectedValue(new Error('Unexpected error'));
 
-    // Act
     await PostUploadMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(mockStatus).toHaveBeenCalledWith(500);
     expect(mockJson).toHaveBeenCalledWith({ error: 'Internal server error' });
   });

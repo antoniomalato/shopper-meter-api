@@ -8,28 +8,23 @@ export const PatchConfirmOrCorrectMeasureController = async (req: Request, res: 
     const result = await confirmOrCorrectMeasureService(parsed);
     res.status(200).json(result);
   } catch (err: any) {
-    // Mapear erros conhecidos para respostas HTTP apropriadas
     const errorResponses: Record<string, () => void> = {
-      // Erro 404 - Medida não encontrada
       '404': () => res.status(404).json({
         error_code: 'MEASURE_NOT_FOUND',
         error_description: 'Leitura não encontrada'
       }),
       
-      // Erro 409 - Medida já confirmada
       '409': () => res.status(409).json({
         error_code: 'CONFIRMATION_DUPLICATE',
         error_description: 'Leitura já confirmada'
       }),
       
-      // Erro de validação (400)
       'ZodError': () => res.status(400).json({
         error_code: 'INVALID_DATA',
         error_description: err.errors.map((e: any) => e.message).join(', ')
       })
     };
 
-    // Executar o handler correspondente ao erro ou retornar erro interno
     const errorHandler = err.status ? errorResponses[err.status] : errorResponses[err.name];
     errorHandler ? errorHandler() : res.status(500).json({ error: 'Internal server error' });
   }

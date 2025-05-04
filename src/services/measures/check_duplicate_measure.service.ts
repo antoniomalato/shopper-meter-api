@@ -1,6 +1,6 @@
 import prisma from "../../database/prisma";
 import { MeasureType } from "../../enums/measures.enum";
-import { Measure } from "@prisma/client";
+import { measure as Measure } from "@prisma/client";
 
 
 export async function checkDuplicateMeasure(

@@ -3,7 +3,6 @@ import { PatchConfirmOrCorrectMeasureController } from '../../../controllers/mea
 import { confirmOrCorrectMeasureSchema } from '../../../schemas/measures/confirm_or_correct_validation.schema';
 import { confirmOrCorrectMeasureService } from '../../../services/measures/confirm_or_correct_measure.service';
 
-// Mock dependencies
 jest.mock('../../../schemas/measures/confirm_or_correct_validation.schema');
 jest.mock('../../../services/measures/confirm_or_correct_measure.service');
 
@@ -24,15 +23,12 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
       json: mockJson,
     };
 
-    // Reset all mocks
     jest.clearAllMocks();
     
-    // Default mock implementation for schema validation
     (confirmOrCorrectMeasureSchema.parse as jest.Mock).mockImplementation((data) => data);
   });
 
   it('should successfully confirm a measure', async () => {
-    // Arrange
     const mockRequestData = {
       measure_uuid: 'test-uuid',
       is_correct: true,
@@ -53,10 +49,8 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
     mockRequest.body = mockRequestData;
     (confirmOrCorrectMeasureService as jest.Mock).mockResolvedValue(expectedResult);
 
-    // Act
     await PatchConfirmOrCorrectMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(confirmOrCorrectMeasureSchema.parse).toHaveBeenCalledWith(mockRequestData);
     expect(confirmOrCorrectMeasureService).toHaveBeenCalledWith(mockRequestData);
     expect(mockStatus).toHaveBeenCalledWith(200);
@@ -64,7 +58,6 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
   });
 
   it('should successfully correct a measure', async () => {
-    // Arrange
     const mockRequestData = {
       measure_uuid: 'test-uuid',
       is_correct: false,
@@ -86,10 +79,8 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
     mockRequest.body = mockRequestData;
     (confirmOrCorrectMeasureService as jest.Mock).mockResolvedValue(expectedResult);
 
-    // Act
     await PatchConfirmOrCorrectMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(confirmOrCorrectMeasureSchema.parse).toHaveBeenCalledWith(mockRequestData);
     expect(confirmOrCorrectMeasureService).toHaveBeenCalledWith(mockRequestData);
     expect(mockStatus).toHaveBeenCalledWith(200);
@@ -97,7 +88,6 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
   });
 
   it('should return 404 when measure is not found', async () => {
-    // Arrange
     const mockError = {
       status: '404'
     };
@@ -109,10 +99,8 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
 
     (confirmOrCorrectMeasureService as jest.Mock).mockRejectedValue(mockError);
 
-    // Act
     await PatchConfirmOrCorrectMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(mockStatus).toHaveBeenCalledWith(404);
     expect(mockJson).toHaveBeenCalledWith({
       error_code: 'MEASURE_NOT_FOUND',
@@ -121,7 +109,6 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
   });
 
   it('should return 409 when measure is already confirmed', async () => {
-    // Arrange
     const mockError = {
       status: '409'
     };
@@ -133,10 +120,8 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
 
     (confirmOrCorrectMeasureService as jest.Mock).mockRejectedValue(mockError);
 
-    // Act
     await PatchConfirmOrCorrectMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(mockStatus).toHaveBeenCalledWith(409);
     expect(mockJson).toHaveBeenCalledWith({
       error_code: 'CONFIRMATION_DUPLICATE',
@@ -145,7 +130,6 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
   });
 
   it('should return 400 when validation fails', async () => {
-    // Arrange
     const mockZodError = {
       name: 'ZodError',
       errors: [
@@ -162,10 +146,8 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
       throw mockZodError;
     });
 
-    // Act
     await PatchConfirmOrCorrectMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(mockStatus).toHaveBeenCalledWith(400);
     expect(mockJson).toHaveBeenCalledWith({
       error_code: 'INVALID_DATA',
@@ -174,7 +156,6 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
   });
 
   it('should return 500 when an unexpected error occurs', async () => {
-    // Arrange
     mockRequest.body = {
       measure_uuid: 'test-uuid',
       is_correct: true
@@ -182,10 +163,8 @@ describe('PatchConfirmOrCorrectMeasureController', () => {
 
     (confirmOrCorrectMeasureService as jest.Mock).mockRejectedValue(new Error('Unexpected error'));
 
-    // Act
     await PatchConfirmOrCorrectMeasureController(mockRequest as Request, mockResponse as Response);
 
-    // Assert
     expect(mockStatus).toHaveBeenCalledWith(500);
     expect(mockJson).toHaveBeenCalledWith({ error: 'Internal server error' });
   });

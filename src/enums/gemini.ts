@@ -1,6 +1,5 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { ImageType } from '../enums/image_type.enum';
 
 dotenv.config();
 
@@ -21,13 +20,13 @@ function detectMimeType(base64Image: string): string {
     const header = base64Image.substring(0, 8);
 
     if (header.startsWith('/9j/')) {
-      mimeType = ImageType.JPEG;
+      mimeType = 'image/jpeg';
     } else if (header.startsWith('iVBORw0')) {
-      mimeType = ImageType.PNG;
+      mimeType = 'image/png';
     } else if (header.startsWith('R0lGODlh')) {
-      mimeType = ImageType.GIF;
+      mimeType = 'image/gif';
     } else if (header.startsWith('UklGR')) {
-      mimeType = ImageType.WEBP;
+      mimeType = 'image/webp';
     }
   }
 
@@ -40,8 +39,6 @@ export async function getMeasureFromImage(base64Image: string): Promise<number> 
   }
 
   try {
-    console.log('Fazendo requisição para a API do Gemini...');
-
     let imageData = base64Image;
     let mimeType = detectMimeType(base64Image);
 
@@ -49,7 +46,7 @@ export async function getMeasureFromImage(base64Image: string): Promise<number> 
       imageData = base64Image.replace(/^data:image\/\w+;base64,/, '');
     }
 
-    console.log(mimeType);
+    console.log(`${mimeType}`);
 
     const response = await axios.post(
       `${GEMINI_API_URL}?key=${apiKey}`,
@@ -77,6 +74,7 @@ export async function getMeasureFromImage(base64Image: string): Promise<number> 
       }
     );
 
+
     const candidates = response.data.candidates;
 
     if (!candidates || candidates.length === 0) {
@@ -92,7 +90,6 @@ export async function getMeasureFromImage(base64Image: string): Promise<number> 
 
     return parseInt(match[0], 10);
   } catch (error: any) {
-    console.error('Erro ao chamar a API do Gemini:', error.message);
     throw new Error('Failed to get measure from image');
   }
 }
