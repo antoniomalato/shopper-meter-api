@@ -6,10 +6,15 @@ dotenv.config();
 
 export function startServer() {
   const app = express();
-  const PORT = process.env.PORT || 80;
+  const PORT = process.env.PORT || 8080;
 
   app.use(express.json());
-  app.use('/api', measureRoutes);
+
+  app.get('/test', (req, res) => {
+    res.json({ message: 'Server is working!' });
+  });
+
+  app.use('/api/measures', measureRoutes);
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

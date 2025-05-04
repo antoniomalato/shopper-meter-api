@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const uploadMeasureSchema = z.object({
+export const uploadMeasureValidationSchema = z.object({
   image: z.string().refine((val) => val.startsWith('data:image/'), {
     message: 'Invalid base64 image',
   }),
@@ -9,4 +9,4 @@ export const uploadMeasureSchema = z.object({
   measure_type: z.enum(['WATER', 'GAS']),
 });
 
-export type UploadMeasureDTO = z.infer<typeof uploadMeasureSchema>;
+export type UploadMeasureValidationSchemaType = z.infer<typeof uploadMeasureValidationSchema>;

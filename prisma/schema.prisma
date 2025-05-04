@@ -8,15 +8,16 @@ datasource db {
 }
 
 model measure {
-  id              String   @id @default(uuid())
+  id               String      @id @default(uuid())
   customer_code    String
   measure_datetime DateTime
   measure_type     MeasureType
   measure_value    Int?
   image_url        String
-  is_confirmed     Boolean  @default(false)
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  has_confirmed    Boolean     @default(false)
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @updatedAt
+  confirmed_at     DateTime?
 }
 
 enum MeasureType {

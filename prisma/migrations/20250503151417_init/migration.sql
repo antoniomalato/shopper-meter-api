@@ -9,9 +9,10 @@ CREATE TABLE "measure" (
     "measure_type" "MeasureType" NOT NULL,
     "measure_value" INTEGER,
     "image_url" TEXT NOT NULL,
-    "is_confirmed" BOOLEAN NOT NULL DEFAULT false,
+    "has_confirmed" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "confirmed_at" TIMESTAMP(3),
 
     CONSTRAINT "measure_pkey" PRIMARY KEY ("id")
 );
