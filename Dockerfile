@@ -1,25 +1,18 @@
-# Etapa de build
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
-# Etapa de produção
 FROM node:20-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --omit=dev
+COPY tsconfig.json ./
+COPY prisma ./prisma/
+COPY wait-for.sh ./
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+RUN npm install
 
-ENV NODE_ENV=production
+COPY . .
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+RUN npx prisma generate
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "./wait-for.sh db npx prisma migrate deploy && npm run start"]
